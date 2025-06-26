@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  webwhats-app:
+    image: webwhats-app:latest
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://webwhats:${POSTGRES_PASSWORD}@postgres:5432/webwhats
+      - REDIS_URL=redis://redis:6379
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - WHATSAPP_INSTANCE=${WHATSAPP_INSTANCE}
+      - ADMIN_CHAT_ID=${ADMIN_CHAT_ID}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./temp:/app/temp
+      - ./whatsapp_auth:/app/whatsapp_auth
+    networks:
+      - webwhats-network
+      - traefik_public
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_public"
+        
+        # --- Router HTTP para redirecionamento ---
+        - "traefik.http.routers.webwhats-http.rule=Host(`webwhats.iaprojetos.com.br`)"
+        - "traefik.http.routers.webwhats-http.entrypoints=web"
+        - "traefik.http.routers.webwhats-http.middlewares=https-redirect@docker"
+
+        # --- Router HTTPS com SSL ---
+        - "traefik.http.routers.webwhats-secure.rule=Host(`webwhats.iaprojetos.com.br`)"
+        - "traefik.http.routers.webwhats-secure.entrypoints=websecure"
+        - "traefik.http.routers.webwhats-secure.tls=true"
+        - "traefik.http.routers.webwhats-secure.tls.certresolver=letsencryptresolver"
+        
+        # --- Definição do Serviço ---
+        - "traefik.http.services.webwhats-service.loadbalancer.server.port=3000"
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=webwhats
+      - POSTGRES_USER=webwhats
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - webwhats-network
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - webwhats-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  webwhats-network:
+    driver: overlay
+    attachable: true
+  traefik_public:
+    external: true
