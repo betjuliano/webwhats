@@ -15,7 +15,7 @@ const webhookRoutes = require('./routes/webhook');
 const messageRoutes = require('./routes/messages');
 const summaryRoutes = require('./routes/summaries');
 const whatsappRoutes = require('./routes/whatsapp');
-const { initializeQueues } = require('./services/queueService');
+const queueService = require('./services/queueService');
 const { startCronJobs } = require('./services/cronService');
 const { initializeMetrics } = require('./utils/metrics');
 const whatsappService = require('./services/whatsappService');
@@ -110,7 +110,7 @@ const initializeApp = async () => {
     await redis.connect();
     logger.info('Redis connected successfully');
     
-    await initializeQueues();
+    await queueService.initializeQueues();
     logger.info('Message queues initialized');
     
     if (process.env.ENABLE_METRICS === 'true') {
