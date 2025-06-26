@@ -17,7 +17,7 @@ const summaryRoutes = require('./routes/summaries');
 const whatsappRoutes = require('./routes/whatsapp');
 const queueService = require('./services/queueService');
 const cronService = require('./services/cronService');
-const { initializeMetrics } = require('./utils/metrics');
+const metricsService = require('./utils/metrics');
 const whatsappService = require('./services/whatsappService');
 
 const app = express();
@@ -114,7 +114,7 @@ const initializeApp = async () => {
     logger.info('Message queues initialized');
     
     if (process.env.ENABLE_METRICS === 'true') {
-      initializeMetrics(app);
+      metricsService.initializeMetrics(app);
       logger.info('Metrics initialized');
     }
     
