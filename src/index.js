@@ -16,7 +16,7 @@ const messageRoutes = require('./routes/messages');
 const summaryRoutes = require('./routes/summaries');
 const whatsappRoutes = require('./routes/whatsapp');
 const queueService = require('./services/queueService');
-const { startCronJobs } = require('./services/cronService');
+const cronService = require('./services/cronService');
 const { initializeMetrics } = require('./utils/metrics');
 const whatsappService = require('./services/whatsappService');
 
@@ -118,7 +118,7 @@ const initializeApp = async () => {
       logger.info('Metrics initialized');
     }
     
-    startCronJobs();
+    cronService.startCronJobs();
     logger.info('Cron jobs started');
     
     server = app.listen(PORT, () => {
