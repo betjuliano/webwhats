@@ -13,7 +13,7 @@ class AIService {
       apiKey: process.env.OPENAI_API_KEY
     });
     
-    this.blipApiUrl = process.env.BLIP_API_URL || 'http://localhost:5000';
+    this.blipApiUrl = process.env.BLIP_API_URL;
     this.maxRetries = 3;
     this.retryDelay = 1000;
   }
