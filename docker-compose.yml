@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   webwhats-app:
-    build: .
+    image: betjuliano/webwhats-app:latest
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://webwhats:${POSTGRES_PASSWORD}@postgres:5432/webwhats
