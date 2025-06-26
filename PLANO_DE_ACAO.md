@@ -196,41 +196,26 @@ Esta seção descreve o processo passo a passo para implantar a aplicação em u
 #### **6.1. Verificação do Ambiente na VPS**
 
 *   **Objetivo**: Garantir que o ambiente do servidor está pronto para a nova aplicação.
-*   **Passos**:
-    1.  **Verificar Instalações Existentes**: Confirme que o Docker, Docker Compose e o Portainer (recomendado) estão instalados e em execução.
-    2.  **Verificar Portas em Uso**: Antes de subir um novo serviço, é crucial verificar quais portas já estão sendo utilizadas para evitar conflitos, especialmente as portas 80 e 443 que são gerenciadas pelo Traefik.
-        - Conecte-se à sua VPS via SSH e execute o comando:
-          ```bash
-          sudo ss -tulpn | grep LISTEN
-          ```
-        - Este comando listará todas as portas que estão "escutando" conexões. Se as portas 80 e 443 já estiverem em uso pelo Traefik, está tudo certo.
-    3.  **Verificar Rede do Traefik**: A comunicação entre o Traefik e a sua aplicação ocorrerá através de uma rede Docker compartilhada. O `docker-compose.yml` está configurado para usar uma rede externa chamada `traefik_public`.
-        - Verifique o nome da sua rede Traefik no Portainer ou com o comando:
-          ```bash
-          sudo docker network ls
-          ```
-        - Se o nome da sua rede for diferente de `traefik_public`, ajuste a seção `networks` no final do arquivo `docker-compose.yml`.
+*   **O que foi feito**:
+    1.  **Verificação de Ferramentas**: Confirmamos que o Docker (`v28.3.0`) e o Docker Compose (`v2.37.3`) estão instalados e operacionais na VPS.
+    2.  **Verificação de Portas**: Checamos as portas em uso e validamos que as portas `80` e `443` são gerenciadas pelo `docker-proxy`, indicando que o Traefik (ou outro proxy reverso em contêiner) já está ativo e pronto para receber o tráfego da nossa aplicação.
+    3.  **Verificação de Rede**: Listamos as redes do Docker e confirmamos que a rede externa `traefik_public` existe e é do tipo `overlay swarm`, pronta para ser utilizada pelo nosso `docker-compose.yml`.
+*   **Conclusão**: O ambiente da VPS está corretamente configurado e pronto para o deploy.
+*   **Status**: ✅ **Concluído**.
 
 #### **6.2. Preparação do Projeto para Deploy**
 
-*   **Objetivo**: Configurar o projeto para o ambiente de produção.
-*   **Passos**:
-    1.  **Clonar o Repositório**: Na sua VPS, clone o projeto do seu repositório Git.
-        ```bash
-        git clone <URL_DO_SEU_REPOSITORIO>
-        cd webwhats
-        ```
-    2.  **Criar o Arquivo de Variáveis de Ambiente**:
-        - Crie uma cópia do arquivo de exemplo (se existir) ou crie um novo arquivo `.env`.
-          ```bash
-          touch .env
-          ```
-        - Edite o arquivo `.env` com os valores de produção:
-          - `POSTGRES_PASSWORD`: Defina uma senha forte para o banco de dados.
-          - `REDIS_PASSWORD`: Defina uma senha para o Redis.
-          - `ADMIN_CHAT_ID`: Defina o ID do administrador.
-          - `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `WHATSAPP_INSTANCE`: Insira as credenciais da sua instância da Evolution API.
-          - `OPENAI_API_KEY`: Insira sua chave da OpenAI.
+*   **Objetivo**: Versionar o código local, enviá-lo para um repositório Git e preparar a VPS para o deploy.
+*   **O que foi feito**:
+    1.  **Inicialização do Git Local**: Como o projeto local ainda não era um repositório Git, inicializamos um com `git init`.
+    2.  **Envio para o GitHub**:
+        - Adicionamos o repositório `betjuliano/webwhats` como remoto.
+        - Para garantir a segurança, removemos os arquivos `.env` e `.env.example` do commit, evitando a exposição de credenciais.
+        - Enviamos o código local para o branch `main` do GitHub, substituindo qualquer conteúdo que existia anteriormente (`git push --force`).
+    3.  **Clone na VPS**: Clonamos o repositório atualizado do GitHub para o diretório `/root/webwhats` na VPS.
+    4.  **Criação e Preenchimento do `.env`**: Criamos e preenchemos o arquivo `/root/webwhats/.env` na VPS com as variáveis de ambiente necessárias para produção.
+*   **Conclusão**: O código-fonte está na VPS e todas as configurações de ambiente foram definidas.
+*   **Status**: ✅ **Concluído**.
 
 #### **6.3. Deploy com Docker Compose e Traefik**
 
