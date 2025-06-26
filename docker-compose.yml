@@ -49,9 +49,11 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - webwhats-network
+    configs:
+      - source: init_sql
+        target: /docker-entrypoint-initdb.d/init.sql
 
   redis:
     image: redis:7-alpine
@@ -71,3 +73,7 @@ networks:
     attachable: true
   traefik_public:
     external: true
+
+configs:
+  init_sql:
+    file: ./docker/postgres/init.sql
