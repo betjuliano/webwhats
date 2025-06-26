@@ -15,10 +15,10 @@ services:
       - postgres
       - redis
     volumes:
-      - ./logs:/app/logs
-      - ./uploads:/app/uploads
-      - ./temp:/app/temp
-      - ./whatsapp_auth:/app/whatsapp_auth
+      - logs_data:/app/logs
+      - uploads_data:/app/uploads
+      - temp_data:/app/temp
+      - auth_data:/app/whatsapp_auth
     networks:
       - webwhats-network
       - traefik_public
@@ -66,6 +66,10 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  logs_data:
+  uploads_data:
+  temp_data:
+  auth_data:
 
 networks:
   webwhats-network:
