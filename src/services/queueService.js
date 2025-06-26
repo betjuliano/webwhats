@@ -14,16 +14,18 @@ class QueueService {
   async initializeQueues() {
     try {
       // Create Redis connection for Bull
-      const redisConfig = {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD,
-        db: 1 // Use different database for queues
-      };
+      const redisOptions = process.env.REDIS_URL 
+        ? process.env.REDIS_URL
+        : {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: process.env.REDIS_PORT || 6379,
+            password: process.env.REDIS_PASSWORD,
+            db: 1 // Use a different database for queues
+          };
 
       // Media processing queue
       this.queues.mediaProcessing = new Bull('media processing', {
-        redis: redisConfig,
+        redis: redisOptions,
         defaultJobOptions: {
           removeOnComplete: 50,
           removeOnFail: 100,
@@ -37,7 +39,7 @@ class QueueService {
 
       // Summary generation queue
       this.queues.summaryGeneration = new Bull('summary generation', {
-        redis: redisConfig,
+        redis: redisOptions,
         defaultJobOptions: {
           removeOnComplete: 20,
           removeOnFail: 50,
@@ -51,7 +53,7 @@ class QueueService {
 
       // Message response queue
       this.queues.messageResponse = new Bull('message response', {
-        redis: redisConfig,
+        redis: redisOptions,
         defaultJobOptions: {
           removeOnComplete: 100,
           removeOnFail: 50,
