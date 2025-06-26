@@ -10,30 +10,26 @@ class RedisClient {
 
   async connect() {
     try {
-      const redisConfig = {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD,
-        retryDelayOnFailover: 100,
-        enableReadyCheck: false,
-        maxRetriesPerRequest: null,
-        lazyConnect: true,
-        keepAlive: 30000,
-        connectTimeout: 10000,
-        commandTimeout: 5000,
-        retryDelayOnClusterDown: 300,
-        retryDelayOnFailover: 100,
-        maxRetriesPerRequest: 3
-      };
-
-      // Main Redis client
-      this.client = new Redis(redisConfig);
-      
-      // Subscriber client for pub/sub
-      this.subscriber = new Redis(redisConfig);
-      
-      // Publisher client for pub/sub
-      this.publisher = new Redis(redisConfig);
+      if (process.env.REDIS_URL) {
+        // Use a URL de conexão se estiver disponível
+        this.client = new Redis(process.env.REDIS_URL);
+        this.subscriber = new Redis(process.env.REDIS_URL);
+        this.publisher = new Redis(process.env.REDIS_URL);
+      } else {
+        // Fallback para configuração manual (para desenvolvimento local)
+        const redisConfig = {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: process.env.REDIS_PORT || 6379,
+          password: process.env.REDIS_PASSWORD,
+          retryDelayOnFailover: 100,
+          enableReadyCheck: false,
+          maxRetriesPerRequest: null,
+          lazyConnect: true,
+        };
+        this.client = new Redis(redisConfig);
+        this.subscriber = new Redis(redisConfig);
+        this.publisher = new Redis(redisConfig);
+      }
 
       // Event handlers
       this.client.on('connect', () => {
