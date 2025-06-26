@@ -3,8 +3,6 @@ version: '3.8'
 services:
   webwhats-app:
     image: webwhats-app:latest
-    env_file:
-      - ./.env
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://webwhats:${POSTGRES_PASSWORD}@postgres:5432/webwhats
