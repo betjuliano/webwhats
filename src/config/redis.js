@@ -52,11 +52,6 @@ class RedisClient {
         logger.info('Redis client reconnecting...');
       });
 
-      // Connect to Redis
-      await this.client.connect();
-      await this.subscriber.connect();
-      await this.publisher.connect();
-
       logger.info('Redis connections established successfully');
       
     } catch (error) {
