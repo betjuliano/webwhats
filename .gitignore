@@ -254,7 +254,6 @@ grafana_data/
 *.old
 
 # Lock files (keep package-lock.json, ignore others)
-yarn.lock
 pnpm-lock.yaml
 
 # Runtime
