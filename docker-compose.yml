@@ -6,7 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://webwhats:${POSTGRES_PASSWORD}@postgres:5432/webwhats?sslmode=disable
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
       - EVOLUTION_API_URL=${EVOLUTION_API_URL}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
       - WHATSAPP_INSTANCE=${WHATSAPP_INSTANCE}
