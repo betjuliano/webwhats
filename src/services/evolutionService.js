@@ -15,7 +15,7 @@ class EvolutionService {
         'Content-Type': 'application/json',
         'apikey': this.apiKey
       },
-      timeout: 30000
+      timeout: 120000
     });
 
     // Setup request/response interceptors

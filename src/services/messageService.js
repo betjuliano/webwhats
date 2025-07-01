@@ -161,7 +161,7 @@ class MessageService {
   // Process individual chat message
   async processIndividualMessage(message) {
     try {
-      const content = message.content.trim();
+      const content = (message.content || '').trim();
       const lowerContent = content.toLowerCase();
       const chatId = message.chat_id;
 
@@ -176,11 +176,13 @@ class MessageService {
       }
 
       // Handle commands first
-      if (content.startsWith('//') || content.startsWith('/')) {
+      if (content && (content.startsWith('//') || content.startsWith('/'))) {
         const commandPrefix = content.startsWith('//') ? '//' : '/';
         const commandBody = content.substring(commandPrefix.length);
         const [command, ...args] = commandBody.split(' ');
         const query = args.join(' ');
+
+        console.log('🎯 COMANDO DETECTADO:', { command, query, chatId });
 
         if (commandPrefix === '//' && command === 'apoioaluno') {
           await this.activateSupportMode(chatId, 'curso');
@@ -193,6 +195,7 @@ class MessageService {
         }
 
         if (['curso', 'projetos', 'orientacoes'].includes(command)) {
+          console.log('✅ PROCESSANDO COMANDO DE CONHECIMENTO:', command);
           await this.handleKnowledgeCommand(command, query, message);
           return;
         }
@@ -204,9 +207,16 @@ class MessageService {
       }
 
       // Check if message has media that needs processing
-      if (message.media_url && message.media_type) {
+      console.log('🔍 VERIFICANDO MÍDIA:', {
+        hasMediaUrl: !!message.media_url,
+        mediaType: message.media_type,
+        messageType: message.message_type
+      });
+      
+      if (message.media_url && message.media_type === 'audio') {
+        console.log('✅ ENFILEIRANDO ÁUDIO PARA TRANSCRIÇÃO');
         await this.queueMediaProcessing(message);
-      } else if (message.content && message.message_type === 'text') {
+      } else if (content && message.message_type === 'text') {
         // Process text message
         await this.processTextMessage(message);
       }

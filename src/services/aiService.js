@@ -346,7 +346,7 @@ class AIService {
         method: 'GET',
         url: url,
         responseType: 'stream',
-        timeout: 30000
+        timeout: 120000
       });
 
       const extension = this.getFileExtension(response.headers['content-type'], type);
@@ -425,7 +425,7 @@ class AIService {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        timeout: 30000
+        timeout: 120000
       });
 
       return response.data.description || 'Não foi possível descrever a imagem.';
